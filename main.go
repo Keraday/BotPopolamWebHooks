@@ -140,29 +140,6 @@ func webhookHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-// func getUpdates(offset int) ([]Update, error) {
-// 	url := fmt.Sprintf("%s/getUpdates?offset=%d&timeout=30", baseURL, offset)
-// 	resp, err := http.Get(url)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	defer resp.Body.Close()
-
-// 	body, _ := io.ReadAll(resp.Body)
-// 	var result struct {
-// 		Ok     bool     `json:"ok"`
-// 		Result []Update `json:"result"`
-// 	}
-// 	if err := json.Unmarshal(body, &result); err != nil {
-// 		return nil, fmt.Errorf("ошибка разбора JSON: %w", err)
-// 	}
-
-// 	if !result.Ok {
-// 		return nil, fmt.Errorf("API error: %s", string(body))
-// 	}
-// 	return result.Result, nil
-// }
-
 func sendMessage(chatID int64, text string) {
 	req := SendMessageRequest{ChatID: chatID, Text: text}
 	jsonData, _ := json.Marshal(req)
