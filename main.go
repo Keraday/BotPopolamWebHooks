@@ -16,8 +16,10 @@ import (
 
 const apiURL = "https://api.telegram.org/bot"
 
-var token = os.Getenv("TOKEN")
-var baseURL = apiURL + token
+var (
+	token   = os.Getenv("TOKEN")
+	baseURL = apiURL + token
+)
 
 // хранилище сессий
 var (
@@ -92,7 +94,6 @@ func main() {
 	}
 	log.Printf("Сервер запущен на порту %s", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
-
 }
 
 // устанавливает вебхук
@@ -108,8 +109,12 @@ func setWebhook(url string) error {
 
 	var result map[string]interface{}
 
-	json.Unmarshal(body, &result)
-	if !result["ok"].(bool) {
+	err = json.Unmarshal(body, &result)
+	if err != nil {
+		return fmt.Errorf("не удалось разобрать ответ от Telegram: %v", err)
+	}
+	ok, okExists := result["ok"].(bool)
+	if !ok || !okExists {
 		return fmt.Errorf("не удалось установить webhook: %s", result["description"])
 	}
 	return nil
@@ -143,7 +148,11 @@ func webhookHandler(w http.ResponseWriter, r *http.Request) {
 func sendMessage(chatID int64, text string) {
 	req := SendMessageRequest{ChatID: chatID, Text: text}
 	jsonData, _ := json.Marshal(req)
-	http.Post(baseURL+"/sendMessage", "application/json", bytes.NewBuffer(jsonData))
+	resp, err := http.Post(baseURL+"/sendMessage", "application/json", bytes.NewBuffer(jsonData))
+	if err != nil {
+		log.Printf("не удалось отправить сообщение: %v", err)
+	}
+	resp.Body.Close()
 }
 
 func getOrCreateSession(chatID int64) *Session {
@@ -206,7 +215,6 @@ func handleMessage(msg *Message) {
 			if sum.UserID == userID {
 				totalAmountU += sum.Amount
 			}
-
 		}
 
 		sendMessage(chatID, fmt.Sprintf("Добавлено: %s потратил(а) %.2f, всего: %.2f", username, amount, totalAmountU))
