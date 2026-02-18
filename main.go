@@ -107,7 +107,7 @@ func setWebhook(url string) error {
 
 	body, _ := io.ReadAll(resp.Body)
 
-	var result map[string]interface{}
+	var result map[string]any
 
 	err = json.Unmarshal(body, &result)
 	if err != nil {
