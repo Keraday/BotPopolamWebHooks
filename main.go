@@ -88,9 +88,10 @@ func main() {
 	log.Printf("Webhook установле: %s", webhookURL)
 
 	http.HandleFunc("/bot", webhookHandler)
+	http.HandleFunc("/health", healthHendler)
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "443"
+		port = "8443"
 	}
 	log.Printf("Сервер запущен на порту %s", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
@@ -312,4 +313,9 @@ func handleMessage(msg *Message) {
 	default:
 		sendMessage(chatID, "Неизвестная команда. Используй /start")
 	}
+}
+
+func healthHendler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("OK"))
 }
