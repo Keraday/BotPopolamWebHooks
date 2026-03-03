@@ -88,7 +88,7 @@ func main() {
 	log.Printf("Webhook установле: %s", webhookURL)
 
 	http.HandleFunc("/bot", webhookHandler)
-	http.HandleFunc("/health", healthHendler)
+	http.HandleFunc("/health", healthHandler)
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8443"
@@ -287,12 +287,10 @@ func handleMessage(msg *Message) {
 			d.amount -= amount
 			c.amount -= amount
 
-			result.WriteString(fmt.Sprintf(
-				"%s → %s: %.2f\n",
+			fmt.Fprintf(&result, "%s → %s: %.2f\n",
 				session.Users[d.id],
 				session.Users[c.id],
-				amount,
-			))
+				amount)
 
 			if d.amount < 0.01 {
 				i++
@@ -315,7 +313,6 @@ func handleMessage(msg *Message) {
 	}
 }
 
-func healthHendler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
+func healthHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("OK"))
 }
