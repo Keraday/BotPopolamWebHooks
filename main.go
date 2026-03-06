@@ -91,7 +91,7 @@ func main() {
 	http.HandleFunc("/health", healthHandler)
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8443"
+		port = "8001"
 	}
 	log.Printf("Сервер запущен на порту %s", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
@@ -314,5 +314,5 @@ func handleMessage(msg *Message) {
 }
 
 func healthHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("OK"))
+	_, _ = w.Write([]byte("OK"))
 }

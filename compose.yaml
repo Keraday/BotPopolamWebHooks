@@ -1,7 +1,11 @@
 services:
-  server:
-    build:
-      context: .
-      target: final
+  TgBotWH:
+    build: .
+    container_name: TgBotWH
+    restart: unless-stopped
     ports:
-      - 8433:8433
+      - "8001:8001"
+    environment:
+      - TOKEN=${BOT_TOKEN}
+      - URL=${BOT_URL:-https://www.kedaypalku.ru:8001/bot}
+      - PORT=8001
